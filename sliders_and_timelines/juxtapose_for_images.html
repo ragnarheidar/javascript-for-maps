@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<!-- A Juxtapose comparing two Sentinel-2 images -->
+<!-- Created by Ragnar Heidar Thrastarson & Icelandic Met Office 2019 -->
+
+<html>
+
+<head>
+    <title>Entujokull 2018-2019 | Icelandic Met Office</title>
+
+    <script src="https://cdn.knightlab.com/libs/juxtapose/latest/js/juxtapose.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.knightlab.com/libs/juxtapose/latest/css/juxtapose.css">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <meta charset="utf-8" />
+
+    <style>
+        .juxtapose {
+            max-height: 90%;
+            max-width: 90%;
+        }
+        
+        .jx-slider {
+            margin-top: 1em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="juxtapose" id="entujokull"></div>
+
+    <script>
+        slider_vertical = new juxtapose.JXSlider('#entujokull', [{
+            src: 'img/S2_slider_20180914_brighter.jpg', //image on the left stored in img subfolder
+            label: '2018-09-14',
+            credit: "Copernicus Sentinel data (2018)"
+        }, {
+            src: 'img/S2_slider_20190909_brighter.jpg', //image in the right stored in img subfolder
+            label: '2019-09-09',
+            credit: "Copernicus Sentinel data (2019) | Both images modified by The Icelandc Met Office (2019)"
+        }], {
+            animate: true,
+            showLabels: true,
+            showCredits: true,
+            startingPosition: "50%", //slider starting position
+            makeResponsive: true
+        });
+    </script>
+</body>
