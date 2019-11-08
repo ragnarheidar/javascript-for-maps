@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!-- A leaflet map with Icelandic Volcanoes  -->
+
+<html>
+
+<head>
+
+    <title>Icelandic Volcanoes | DRAFT</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/fontawesome.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
+
+</head>
+
+<body>
+
+    <div id="map" style="width: 570px; height: 400px;"></div>
+    <script type='text/javascript'>
+        var volcanoIcon = L.icon({
+            iconUrl: 'IMO_triangle.png',
+            iconSize: [20, 18]
+        });
+
+        var map = L.map('map').setView([64.9865, -18.5867], 6);
+
+        var IMO_basemap = L.tileLayer('https://luk.vedur.is/arcgis/rest/services/grunnkort/grunnkort_cache_wmerc84/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 10,
+            minZoom: 4,
+            attribution: 'Tiles &copy; Veðurstofa Íslands | Landmælingar Íslands | Map data © OpenStreetMap contributors'
+        }).addTo(map);
+
+        var volcanoMarker = $.getJSON("volcanoes.json", function(data) {
+            L.geoJson(data, {
+                pointToLayer: function(feature, latlng) {
+                    return L.marker(latlng, {
+                        icon: volcanoIcon,
+                        title: feature.properties.volcano_name,
+                        riseOnHover: true
+                    }).bindTooltip(feature.properties.volcano_name)
+                },
+                onEachFeature: function(feature, featureLayer) {
+                    featureLayer.bindPopup("<a href=" + feature.properties.hyperlink + ">" + feature.properties.volcano_name + "</a>");
+                }
+            }).addTo(map);
+
+        });
+    </script>
+
+</body>
+
+</html>
