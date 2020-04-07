@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Earthquakes with Carto | Reykjanes Peninsula 2020</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+    <link rel="stylesheet" href="https://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- include cartodb.js library -->
+    <script src="https://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+
+    <script>
+      function main() {
+        var map = new L.Map('map', {
+          zoomControl: false,
+          center: [63.8, -22.6],
+          zoom: 10
+        });
+
+        L.tileLayer('https://geo.vedur.is/geoserver/www/imo_basemap_epsg3857/{z}/{x}/{y}.png', {
+          attribution: 'Icelandic Met Office 2019 | National Land Survey of Iceland 2019 | © OpenStreetMap contributors'
+        }).addTo(map);
+
+        cartodb.createLayer(map, 'https://ragnarheidar.carto.com/api/v2/viz/8751acea-42ff-4d03-ad9a-8d74b9b1edc2/viz.json')
+            .addTo(map)
+         .on('done', function(layer) {
+
+          layer.setInteraction(true);
+
+          layer.on('featureOver', function(e, latlng, pos, data) {
+            cartodb.log.log(e, latlng, pos, data);
+          });
+
+          layer.on('error', function(err) {
+            cartodb.log.log('error: ' + err);
+          });
+        }).on('error', function() {
+          cartodb.log.log("some error occurred");
+        });
+      }
+
+      // you could use $(window).load(main);
+      window.onload = main;
+    </script>
+  </body>
+</html>
