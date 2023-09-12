@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Icelandic Met Office - Demo map showing volcanoes</title>
+    <meta charset='utf-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+     integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+     crossorigin=""/>
+     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+     integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+     crossorigin=""></script>
+     
+     
+    <style type='text/css'>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        html,
+        body,
+        #map {
+            width: 570px;
+            height: 400px;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script type="text/javascript">
+
+        //icons!
+        var RedIcon = L.icon({
+            iconUrl: 'assets/red_triangle.svg',
+            iconSize: [20 ,20]
+        });
+
+        var YellowIcon = L.icon({
+            iconUrl: 'assets/yellow_triangle.svg',
+            iconSize: [20 ,20]
+        });
+
+        var GreenIcon = L.icon({
+            iconUrl: 'assets/green_triangle.svg',
+            iconSize: [20 ,20]
+        });
+
+        var map = L.map('map').setView([64.9865, -18.5867], 6);
+
+        //add basemap with attribution
+        var IMObasemap = L.tileLayer('https://geo.vedur.is/geoserver/www/imo_basemap_epsg3857/{z}/{x}/{y}.png', {
+            maxZoom: 10,
+            minZoom: 5,
+            attribution: 'Veðurstofa Íslands | Landmælingar Íslands | Map data © OpenStreetMap contributors'
+        }).addTo(map);
+
+        
+        //try getting the the volcanoes from the EPOS API
+        let url = 'https://api.epos-iceland.is/v1/volcano/products/aviation_color_codes?bbox=62%2C-25%2C67%2C-11&format_type=GeoJSON';
+        const response = fetch(url).then(response => response.json()).then(response => {
+            //L.geoJson(response).addTo(map);
+            var GreenVolcano = L.geoJson(response, {
+                filter: function(feature, layer) {
+                    return feature.properties.status == 'green';
+                },
+                pointToLayer: function(feature, latlng) {
+                    return L.marker(latlng, {icon: GreenIcon, title: feature.properties.volcano_name, riseOnHover: true})
+                },
+                onEachFeature: function(feature, layer) {
+                    layer.bindPopup("<b>" + feature.properties.volcano_name + "</b><br />" + "Color code: " + feature.properties.status + "<br> " + "Publication date: " + feature.properties.publication_date);
+                }
+            });
+
+            var YellowVolcano = L.geoJson(response, {
+                filter: function(feature, layer) {
+                    return feature.properties.status == 'yellow';
+                },
+                pointToLayer: function(feature, latlng) {
+                    return L.marker(latlng, {icon: YellowIcon, title: feature.properties.volcano_name, riseOnHover: true})
+                },
+                onEachFeature: function(feature, layer) {
+                    layer.bindPopup("<b>" + feature.properties.volcano_name + "</b><br />" + "Color code: " + feature.properties.status + "<br> " + "Publication date: " + feature.properties.publication_date);
+                }
+            });
+
+            var RedVolcano = L.geoJson(response, {
+                filter: function(feature, layer) {
+                    return feature.properties.status == 'red';
+                },
+                pointToLayer: function(feature, latlng) {
+                    return L.marker(latlng, {icon: RedIcon, title: feature.properties.volcano_name, riseOnHover: true})
+                },
+                onEachFeature: function(feature, layer) {
+                    layer.bindPopup("<b>" + feature.properties.volcano_name + "</b><br />" + "Color code: " + feature.properties.status + "<br> " + "Publication date: " + feature.properties.publication_date);
+                }
+            });
+
+            GreenVolcano.addTo(map);
+            YellowVolcano.addTo(map);
+            RedVolcano.addTo(map);
+
+           
+            
+        });
+
+    </script>
